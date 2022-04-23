@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PokeApiPokemonResponse {
+public class PokeApiBaseResponse {
     private int count;
     private String next;
     private String previous;
