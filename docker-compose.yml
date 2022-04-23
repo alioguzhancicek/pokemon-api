@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    image: 'pokemon-api:latest'
+    build:
+      context: .
+    container_name: pokemon-api-app
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/pokemon-api
+      - SPRING_DATASOURCE_USERNAME=pokemon-api
+      - SPRING_DATASOURCE_PASSWORD=pokemon-api
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=create
+    ports:
+      - '8080:8080'
+
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: pokemon-api-db
+    environment:
+      - POSTGRES_USER=pokemon-api
+      - POSTGRES_PASSWORD=pokemon-api
+      - POSTGRES_DB=pokemon-api
+    ports:
+      - '5432:5432'
