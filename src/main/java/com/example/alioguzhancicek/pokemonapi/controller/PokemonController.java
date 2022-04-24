@@ -1,7 +1,9 @@
 package com.example.alioguzhancicek.pokemonapi.controller;
 
+import com.example.alioguzhancicek.pokemonapi.controller.request.CreateFavoriteListRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.response.BaseResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonListResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
@@ -22,19 +24,41 @@ public class PokemonController {
 
     @PostMapping("/type")
     @ResponseBody
-    public List<PokemonTypeResponse> getPokemonTypes(@RequestBody GetPokemonTypesRequest request) {
-        return pokemonService.getPokemonTypes(request);
+    public BaseResponse<List<PokemonTypeResponse>> getPokemonTypes(@RequestBody GetPokemonTypesRequest request) {
+
+        return BaseResponse.<List<PokemonTypeResponse>>builder()
+                .data(pokemonService.getPokemonTypes(request))
+                .success(true)
+                .build();
     }
 
     @PostMapping("/pokemon")
     @ResponseBody
-    public List<PokemonListResponse> getAll(@RequestBody GetPokemonsRequest request) {
-        return pokemonService.getAllByType(request);
+    public BaseResponse<List<PokemonListResponse>> getAll(@RequestBody GetPokemonsRequest request) {
+        return BaseResponse.<List<PokemonListResponse>>builder()
+                .data(pokemonService.getAllByType(request))
+                .success(true)
+                .build();
     }
 
     @GetMapping("/pokemon/{idOrName}")
     @ResponseBody
-    public PokemonDetailResponse get(@PathVariable String idOrName) {
-        return pokemonService.get(idOrName);
+    public BaseResponse<PokemonDetailResponse> get(@PathVariable String idOrName) {
+
+        return BaseResponse.<PokemonDetailResponse>builder()
+                .data(pokemonService.get(idOrName))
+                .success(true)
+                .build();
+    }
+
+    @PostMapping("/pokemon/favorite-list/create")
+    @ResponseBody
+    public BaseResponse createFavoriteList(@RequestBody CreateFavoriteListRequest request) {
+
+        pokemonService.createFavoriteList(request);
+
+        return BaseResponse.builder()
+                .success(true)
+                .build();
     }
 }

@@ -1,15 +1,19 @@
 package com.example.alioguzhancicek.pokemonapi.service;
 
+import com.example.alioguzhancicek.pokemonapi.controller.request.CreateFavoriteListRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonListResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
+import com.example.alioguzhancicek.pokemonapi.exception.NoSuchPokemonException;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonDetailResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonListResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonTypeEntityMapper;
+import com.example.alioguzhancicek.pokemonapi.repository.FavoriteListRepository;
 import com.example.alioguzhancicek.pokemonapi.repository.PokemonRepository;
 import com.example.alioguzhancicek.pokemonapi.repository.PokemonTypeRepository;
+import com.example.alioguzhancicek.pokemonapi.repository.entity.FavoriteListEntity;
 import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonEntity;
 import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,6 +31,8 @@ import java.util.List;
 public class PokemonService {
     private final PokemonTypeRepository pokemonTypeRepository;
     private final PokemonRepository pokemonRepository;
+    private final FavoriteListRepository favoriteListRepository;
+
     private final PokemonTypeEntityMapper pokemonTypeEntityMapper = Mappers.getMapper(PokemonTypeEntityMapper.class);
     private final PokemonListResponseMapper pokemonListResponseMapper = Mappers.getMapper(PokemonListResponseMapper.class);
     private final PokemonDetailResponseMapper pokemonDetailResponseMapper = Mappers.getMapper(PokemonDetailResponseMapper.class);
@@ -57,5 +64,25 @@ public class PokemonService {
         }
 
         return pokemonDetailResponseMapper.map(pokemon);
+    }
+
+    public void createFavoriteList(CreateFavoriteListRequest request) {
+
+        List<String> favoritePokemonNames = request.getFavoritePokemons();
+        List<PokemonEntity> favoritePokemonEntities = new ArrayList<>();
+
+        for (int i = 0; i < favoritePokemonNames.size(); i++) {
+            PokemonEntity pokemon = pokemonRepository.findByName(favoritePokemonNames.get(i));
+            if (pokemon == null) {
+                throw new NoSuchPokemonException("Pokemon not found with the name " + favoritePokemonNames.get(i));
+            }
+            favoritePokemonEntities.add(pokemon);
+        }
+
+        FavoriteListEntity favoriteListEntity = new FavoriteListEntity();
+        favoriteListEntity.setName(request.getName());
+        favoriteListEntity.setPokemons(favoritePokemonEntities);
+
+        favoriteListRepository.save(favoriteListEntity);
     }
 }
