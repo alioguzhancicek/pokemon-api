@@ -2,8 +2,10 @@ package com.example.alioguzhancicek.pokemonapi.service;
 
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonListResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
+import com.example.alioguzhancicek.pokemonapi.mapper.PokemonDetailResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonListResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonTypeEntityMapper;
 import com.example.alioguzhancicek.pokemonapi.repository.PokemonRepository;
@@ -26,6 +28,7 @@ public class PokemonService {
     private final PokemonRepository pokemonRepository;
     private final PokemonTypeEntityMapper pokemonTypeEntityMapper = Mappers.getMapper(PokemonTypeEntityMapper.class);
     private final PokemonListResponseMapper pokemonListResponseMapper = Mappers.getMapper(PokemonListResponseMapper.class);
+    private final PokemonDetailResponseMapper pokemonDetailResponseMapper = Mappers.getMapper(PokemonDetailResponseMapper.class);
 
     public List<PokemonTypeResponse> getPokemonTypes(GetPokemonTypesRequest request) {
         List<PokemonTypeEntity> pokemonTypeEntities = pokemonTypeRepository.findAll(Sort.by(request.getSortDir(), request.getSortCol()));
@@ -42,5 +45,17 @@ public class PokemonService {
                     ), Sort.by(request.getSortDir(), request.getSortCol()));
         }
         return pokemonListResponseMapper.map(pokemons);
+    }
+
+    public PokemonDetailResponse get(String idOrName) {
+        PokemonEntity pokemon;
+
+        try {
+            pokemon = pokemonRepository.findById(Long.parseLong(idOrName)).get();
+        } catch (Exception e) {
+            pokemon = pokemonRepository.findByName(idOrName);
+        }
+
+        return pokemonDetailResponseMapper.map(pokemon);
     }
 }

@@ -6,5 +6,5 @@ import org.springframework.data.domain.Sort;
 @Data
 public abstract class SortableAbstractRequest {
     protected String sortCol;
-    protected Sort.Direction sortDir;
+    protected Sort.Direction sortDir = Sort.Direction.ASC;
 }

@@ -1,6 +1,9 @@
 package com.example.alioguzhancicek.pokemonapi.controller;
 
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
+import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonListResponse;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
 import com.example.alioguzhancicek.pokemonapi.service.PokemonService;
 import lombok.RequiredArgsConstructor;
@@ -21,5 +24,17 @@ public class PokemonController {
     @ResponseBody
     public List<PokemonTypeResponse> getPokemonTypes(@RequestBody GetPokemonTypesRequest request) {
         return pokemonService.getPokemonTypes(request);
+    }
+
+    @PostMapping("/pokemon")
+    @ResponseBody
+    public List<PokemonListResponse> getAll(@RequestBody GetPokemonsRequest request) {
+        return pokemonService.getAllByType(request);
+    }
+
+    @GetMapping("/pokemon/{idOrName}")
+    @ResponseBody
+    public PokemonDetailResponse get(@PathVariable String idOrName) {
+        return pokemonService.get(idOrName);
     }
 }

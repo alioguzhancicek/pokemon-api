@@ -12,4 +12,5 @@ public interface PokemonRepository extends JpaRepository<PokemonEntity, Long>, J
 
     List<PokemonEntity> findByTypesContaining(PokemonTypeEntity pokemonTypeEntity, Sort sort);
 
+    PokemonEntity findByName(String name);
 }
