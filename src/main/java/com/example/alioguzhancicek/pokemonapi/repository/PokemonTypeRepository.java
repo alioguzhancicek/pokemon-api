@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PokemonTypeRepository extends JpaRepository<PokemonTypeEntity, Long> {
+    PokemonTypeEntity findByName(String name);
 }
