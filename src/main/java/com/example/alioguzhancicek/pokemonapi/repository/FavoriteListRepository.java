@@ -4,4 +4,8 @@ import com.example.alioguzhancicek.pokemonapi.repository.entity.FavoriteListEnti
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FavoriteListRepository extends JpaRepository<FavoriteListEntity, Long> {
+
+    FavoriteListEntity findByName(String name);
+
+    void deleteByName(String name);
 }

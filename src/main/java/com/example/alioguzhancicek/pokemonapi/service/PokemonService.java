@@ -1,6 +1,6 @@
 package com.example.alioguzhancicek.pokemonapi.service;
 
-import com.example.alioguzhancicek.pokemonapi.controller.request.CreateFavoriteListRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.request.FavoriteListRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -66,23 +67,41 @@ public class PokemonService {
         return pokemonDetailResponseMapper.map(pokemon);
     }
 
-    public void createFavoriteList(CreateFavoriteListRequest request) {
+    public void createFavoriteList(FavoriteListRequest request) {
+        FavoriteListEntity favoriteListEntity = new FavoriteListEntity();
+        favoriteListEntity.setName(request.getName());
+        favoriteListEntity.setPokemons(prepareFavoritePokemonEntities(request));
+        favoriteListRepository.save(favoriteListEntity);
+    }
 
-        List<String> favoritePokemonNames = request.getFavoritePokemons();
+    public void addToFavoriteList(FavoriteListRequest request) {
+        FavoriteListEntity favoriteListEntity = favoriteListRepository.findByName(request.getName());
+        favoriteListEntity.getPokemons().addAll(prepareFavoritePokemonEntities(request));
+        favoriteListRepository.save(favoriteListEntity);
+    }
+
+    public void deleteFromFavoriteList(FavoriteListRequest request) {
+        FavoriteListEntity favoriteListEntity = favoriteListRepository.findByName(request.getName());
+        favoriteListEntity.getPokemons().removeAll(prepareFavoritePokemonEntities(request));
+        favoriteListRepository.save(favoriteListEntity);
+    }
+
+    private List<PokemonEntity> prepareFavoritePokemonEntities(FavoriteListRequest request) {
+        List<String> favoritePokemonNames = request.getPokemons();
         List<PokemonEntity> favoritePokemonEntities = new ArrayList<>();
 
-        for (int i = 0; i < favoritePokemonNames.size(); i++) {
-            PokemonEntity pokemon = pokemonRepository.findByName(favoritePokemonNames.get(i));
+        for (String favoritePokemonName : favoritePokemonNames) {
+            PokemonEntity pokemon = pokemonRepository.findByName(favoritePokemonName);
             if (pokemon == null) {
-                throw new NoSuchPokemonException("Pokemon not found with the name " + favoritePokemonNames.get(i));
+                throw new NoSuchPokemonException("Pokemon not found with the name " + favoritePokemonName);
             }
             favoritePokemonEntities.add(pokemon);
         }
+        return favoritePokemonEntities;
+    }
 
-        FavoriteListEntity favoriteListEntity = new FavoriteListEntity();
-        favoriteListEntity.setName(request.getName());
-        favoriteListEntity.setPokemons(favoritePokemonEntities);
-
-        favoriteListRepository.save(favoriteListEntity);
+    @Transactional
+    public void deleteFavoriteList(String name) {
+        favoriteListRepository.deleteByName(name);
     }
 }

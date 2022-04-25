@@ -11,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CreateFavoriteListRequest {
+public class FavoriteListRequest {
 
     @NotNull
     @NotBlank
@@ -19,5 +19,5 @@ public class CreateFavoriteListRequest {
 
     @NotNull
     @NotEmpty
-    private List<String> favoritePokemons;
+    private List<String> pokemons;
 }

@@ -1,6 +1,6 @@
 package com.example.alioguzhancicek.pokemonapi.controller;
 
-import com.example.alioguzhancicek.pokemonapi.controller.request.CreateFavoriteListRequest;
+import com.example.alioguzhancicek.pokemonapi.controller.request.FavoriteListRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
 import com.example.alioguzhancicek.pokemonapi.controller.response.BaseResponse;
@@ -53,9 +53,42 @@ public class PokemonController {
 
     @PostMapping("/pokemon/favorite-list/create")
     @ResponseBody
-    public BaseResponse createFavoriteList(@RequestBody CreateFavoriteListRequest request) {
+    public BaseResponse createFavoriteList(@RequestBody FavoriteListRequest request) {
 
         pokemonService.createFavoriteList(request);
+
+        return BaseResponse.builder()
+                .success(true)
+                .build();
+    }
+
+    @PostMapping("/pokemon/favorite-list/add")
+    @ResponseBody
+    public BaseResponse addToFavoriteList(@RequestBody FavoriteListRequest request) {
+
+        pokemonService.addToFavoriteList(request);
+
+        return BaseResponse.builder()
+                .success(true)
+                .build();
+    }
+
+    @PostMapping("/pokemon/favorite-list/delete")
+    @ResponseBody
+    public BaseResponse deleteFromFavoriteList(@RequestBody FavoriteListRequest request) {
+
+        pokemonService.deleteFromFavoriteList(request);
+
+        return BaseResponse.builder()
+                .success(true)
+                .build();
+    }
+
+    @DeleteMapping("/pokemon/favorite-list/{name}")
+    @ResponseBody
+    public BaseResponse deleteFavoriteList(@PathVariable String name) {
+
+        pokemonService.deleteFavoriteList(name);
 
         return BaseResponse.builder()
                 .success(true)
