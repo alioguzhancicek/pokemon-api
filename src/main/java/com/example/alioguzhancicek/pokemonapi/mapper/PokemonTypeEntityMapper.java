@@ -1,7 +1,7 @@
 package com.example.alioguzhancicek.pokemonapi.mapper;
 
-import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
+import com.example.alioguzhancicek.pokemonapi.model.dto.response.PokemonTypeResponse;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonTypeEntity;
 import org.mapstruct.Mapper;
 
 @Mapper

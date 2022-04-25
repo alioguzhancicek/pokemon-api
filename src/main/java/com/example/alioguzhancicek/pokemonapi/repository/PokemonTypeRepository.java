@@ -1,6 +1,6 @@
 package com.example.alioguzhancicek.pokemonapi.repository;
 
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.example.alioguzhancicek.pokemonapi.controller.response;
+package com.example.alioguzhancicek.pokemonapi.model.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

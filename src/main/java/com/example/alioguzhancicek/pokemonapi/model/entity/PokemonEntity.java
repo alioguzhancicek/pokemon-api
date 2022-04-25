@@ -1,4 +1,4 @@
-package com.example.alioguzhancicek.pokemonapi.repository.entity;
+package com.example.alioguzhancicek.pokemonapi.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;

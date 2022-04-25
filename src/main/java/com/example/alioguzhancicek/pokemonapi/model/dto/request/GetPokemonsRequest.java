@@ -1,4 +1,4 @@
-package com.example.alioguzhancicek.pokemonapi.controller.request;
+package com.example.alioguzhancicek.pokemonapi.model.dto.request;
 
 public class GetPokemonsRequest extends FilterableAndSortableAbstractRequest {
 }

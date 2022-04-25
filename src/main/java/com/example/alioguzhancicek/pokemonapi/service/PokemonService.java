@@ -1,21 +1,16 @@
 package com.example.alioguzhancicek.pokemonapi.service;
 
-import com.example.alioguzhancicek.pokemonapi.controller.request.FavoriteListRequest;
-import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonTypesRequest;
-import com.example.alioguzhancicek.pokemonapi.controller.request.GetPokemonsRequest;
-import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonDetailResponse;
-import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonListResponse;
-import com.example.alioguzhancicek.pokemonapi.controller.response.PokemonTypeResponse;
 import com.example.alioguzhancicek.pokemonapi.exception.NoSuchPokemonException;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonDetailResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonListResponseMapper;
-import com.example.alioguzhancicek.pokemonapi.mapper.PokemonTypeEntityMapper;
+import com.example.alioguzhancicek.pokemonapi.model.dto.request.FavoriteListRequest;
+import com.example.alioguzhancicek.pokemonapi.model.dto.request.GetPokemonsRequest;
+import com.example.alioguzhancicek.pokemonapi.model.dto.response.PokemonDetailResponse;
+import com.example.alioguzhancicek.pokemonapi.model.dto.response.PokemonListResponse;
+import com.example.alioguzhancicek.pokemonapi.model.entity.FavoriteListEntity;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonEntity;
 import com.example.alioguzhancicek.pokemonapi.repository.FavoriteListRepository;
 import com.example.alioguzhancicek.pokemonapi.repository.PokemonRepository;
-import com.example.alioguzhancicek.pokemonapi.repository.PokemonTypeRepository;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.FavoriteListEntity;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonEntity;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Sort;
@@ -30,18 +25,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PokemonService {
-    private final PokemonTypeRepository pokemonTypeRepository;
+    private final PokemonTypeService pokemonTypeService;
     private final PokemonRepository pokemonRepository;
     private final FavoriteListRepository favoriteListRepository;
 
-    private final PokemonTypeEntityMapper pokemonTypeEntityMapper = Mappers.getMapper(PokemonTypeEntityMapper.class);
     private final PokemonListResponseMapper pokemonListResponseMapper = Mappers.getMapper(PokemonListResponseMapper.class);
     private final PokemonDetailResponseMapper pokemonDetailResponseMapper = Mappers.getMapper(PokemonDetailResponseMapper.class);
-
-    public List<PokemonTypeResponse> getPokemonTypes(GetPokemonTypesRequest request) {
-        List<PokemonTypeEntity> pokemonTypeEntities = pokemonTypeRepository.findAll(Sort.by(request.getSortDir(), request.getSortCol()));
-        return pokemonTypeEntityMapper.map(pokemonTypeEntities);
-    }
 
     public List<PokemonListResponse> getAllByType(GetPokemonsRequest request) {
         List<PokemonEntity> pokemons;
@@ -49,7 +38,7 @@ public class PokemonService {
             pokemons = pokemonRepository.findAll(Sort.by(request.getSortDir(), request.getSortCol()));
         } else {
             pokemons = pokemonRepository.findByTypesContaining(
-                    pokemonTypeRepository.findByName(request.getFilterMap().get("type")
+                    pokemonTypeService.findByName(request.getFilterMap().get("type")
                     ), Sort.by(request.getSortDir(), request.getSortCol()));
         }
         return pokemonListResponseMapper.map(pokemons);
@@ -103,5 +92,13 @@ public class PokemonService {
     @Transactional
     public void deleteFavoriteList(String name) {
         favoriteListRepository.deleteByName(name);
+    }
+
+    public int pokemonCount() {
+        return (int) pokemonRepository.count();
+    }
+
+    public void save(PokemonEntity pokemonEntity) {
+        pokemonRepository.save(pokemonEntity);
     }
 }

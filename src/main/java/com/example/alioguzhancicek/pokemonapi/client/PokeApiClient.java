@@ -4,11 +4,11 @@ import com.example.alioguzhancicek.pokemonapi.client.response.PokeApiBaseRespons
 import com.example.alioguzhancicek.pokemonapi.client.response.Pokemon;
 import com.example.alioguzhancicek.pokemonapi.client.response.PokemonStat;
 import com.example.alioguzhancicek.pokemonapi.client.response.PokemonType;
-import com.example.alioguzhancicek.pokemonapi.repository.PokemonRepository;
-import com.example.alioguzhancicek.pokemonapi.repository.PokemonTypeRepository;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonEntity;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonStatEntity;
-import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonEntity;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonStatEntity;
+import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonTypeEntity;
+import com.example.alioguzhancicek.pokemonapi.service.PokemonService;
+import com.example.alioguzhancicek.pokemonapi.service.PokemonTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +32,8 @@ public class PokeApiClient {
     @Value("${pokemon-limit:151}")
     private int pokemonLimit;
 
-    private final PokemonTypeRepository pokemonTypeRepository;
-    private final PokemonRepository pokemonRepository;
+    private final PokemonService pokemonService;
+    private final PokemonTypeService pokemonTypeService;
 
     private WebClient client = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -47,13 +47,13 @@ public class PokeApiClient {
 
         fetchAndPersistPokemonTypes();
 
-        long fetchFrom = pokemonRepository.count() + 1;
+        int fetchFrom = pokemonService.pokemonCount() + 1;
 
         if (fetchFrom > pokemonLimit) {
             return;
         }
 
-        for (int i = (int) fetchFrom; i <= pokemonLimit; i++) {
+        for (int i = fetchFrom; i <= pokemonLimit; i++) {
             fetchAndPersistPokemon(i);
         }
     }
@@ -68,7 +68,7 @@ public class PokeApiClient {
         List<String> allPokemonTypes = pokemonTypesResponse.getResults().stream().map(r -> r.getName()).collect(Collectors.toList());
 
         int allPokemonTypesCount = allPokemonTypes.size();
-        int savedPokemonTypesCount = (int) pokemonTypeRepository.count();
+        int savedPokemonTypesCount = pokemonTypeService.count();
 
         if (savedPokemonTypesCount >= allPokemonTypesCount) {
             return;
@@ -78,7 +78,7 @@ public class PokeApiClient {
                 allPokemonTypes.subList(savedPokemonTypesCount, allPokemonTypesCount)
                         .stream().map(PokemonTypeEntity::new).collect(Collectors.toList());
 
-        pokemonTypeRepository.saveAll(pokemonTypeEntities);
+        pokemonTypeService.saveAll(pokemonTypeEntities);
     }
 
     private void fetchAndPersistPokemon(int id) {
@@ -109,9 +109,9 @@ public class PokeApiClient {
         Set<PokemonTypeEntity> types = new HashSet<>();
 
         for (PokemonType pokemonType : pokemonResponse.getTypes()) {
-            types.add(pokemonTypeRepository.findByName(pokemonType.getType().getName()));
+            types.add(pokemonTypeService.findByName(pokemonType.getType().getName()));
         }
         pokemonEntity.setTypes(types);
-        pokemonRepository.save(pokemonEntity);
+        pokemonService.save(pokemonEntity);
     }
 }
