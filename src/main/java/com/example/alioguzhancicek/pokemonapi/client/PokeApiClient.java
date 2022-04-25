@@ -11,6 +11,7 @@ import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonStatEntit
 import com.example.alioguzhancicek.pokemonapi.repository.entity.PokemonTypeEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,10 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class PokemonClient {
+public class PokeApiClient {
 
-    private static final int LIMIT = 14;
+    @Value("${pokemon-limit:151}")
+    private int pokemonLimit;
 
     private final PokemonTypeRepository pokemonTypeRepository;
     private final PokemonRepository pokemonRepository;
@@ -47,11 +49,11 @@ public class PokemonClient {
 
         long fetchFrom = pokemonRepository.count() + 1;
 
-        if (fetchFrom > LIMIT) {
+        if (fetchFrom > pokemonLimit) {
             return;
         }
 
-        for (int i = (int) fetchFrom; i <= LIMIT; i++) {
+        for (int i = (int) fetchFrom; i <= pokemonLimit; i++) {
             fetchAndPersistPokemon(i);
         }
     }
