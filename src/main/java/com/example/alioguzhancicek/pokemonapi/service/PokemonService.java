@@ -1,6 +1,6 @@
 package com.example.alioguzhancicek.pokemonapi.service;
 
-import com.example.alioguzhancicek.pokemonapi.exception.NoSuchPokemonException;
+import com.example.alioguzhancicek.pokemonapi.exception.PokemonAPIException;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonDetailResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.mapper.PokemonListResponseMapper;
 import com.example.alioguzhancicek.pokemonapi.model.dto.request.FavoriteListRequest;
@@ -64,15 +64,23 @@ public class PokemonService {
     }
 
     public void addToFavoriteList(FavoriteListRequest request) {
-        FavoriteListEntity favoriteListEntity = favoriteListRepository.findByName(request.getName());
+        FavoriteListEntity favoriteListEntity = checkExistsAndReturnFavoriteListEntity(request.getName());
         favoriteListEntity.getPokemons().addAll(prepareFavoritePokemonEntities(request));
         favoriteListRepository.save(favoriteListEntity);
     }
 
     public void deleteFromFavoriteList(FavoriteListRequest request) {
-        FavoriteListEntity favoriteListEntity = favoriteListRepository.findByName(request.getName());
+        FavoriteListEntity favoriteListEntity = checkExistsAndReturnFavoriteListEntity(request.getName());
         favoriteListEntity.getPokemons().removeAll(prepareFavoritePokemonEntities(request));
         favoriteListRepository.save(favoriteListEntity);
+    }
+
+    private FavoriteListEntity checkExistsAndReturnFavoriteListEntity(String name) {
+        FavoriteListEntity favoriteListEntity = favoriteListRepository.findByName(name);
+        if (favoriteListEntity == null) {
+            throw new PokemonAPIException("Favorite list not found with the name " + name);
+        }
+        return favoriteListEntity;
     }
 
     private List<PokemonEntity> prepareFavoritePokemonEntities(FavoriteListRequest request) {
@@ -82,7 +90,7 @@ public class PokemonService {
         for (String favoritePokemonName : favoritePokemonNames) {
             PokemonEntity pokemon = pokemonRepository.findByName(favoritePokemonName);
             if (pokemon == null) {
-                throw new NoSuchPokemonException("Pokemon not found with the name " + favoritePokemonName);
+                throw new PokemonAPIException("Pokemon not found with the name " + favoritePokemonName);
             }
             favoritePokemonEntities.add(pokemon);
         }

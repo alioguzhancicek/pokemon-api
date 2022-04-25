@@ -9,6 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @AllArgsConstructor
-public class NoSuchPokemonException extends RuntimeException {
+public class PokemonAPIException extends RuntimeException {
     private String message;
 }

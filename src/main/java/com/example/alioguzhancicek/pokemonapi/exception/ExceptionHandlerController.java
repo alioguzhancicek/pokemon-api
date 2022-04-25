@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-    @ExceptionHandler(NoSuchPokemonException.class)
+    @ExceptionHandler(PokemonAPIException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     @ResponseBody
-    public BaseResponse<Object> onNoSuchPokemonException(NoSuchPokemonException e) {
+    public BaseResponse<Object> onPokemonAPIException(PokemonAPIException e) {
         log.error(e.getMessage(), e);
 
         return BaseResponse.builder()
