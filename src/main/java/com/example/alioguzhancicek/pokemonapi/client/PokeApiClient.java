@@ -53,9 +53,13 @@ public class PokeApiClient {
             return;
         }
 
+        List<PokemonEntity> pokemonEntities = new ArrayList<>();
+
         for (int i = fetchFrom; i <= pokemonLimit; i++) {
-            fetchAndPersistPokemon(i);
+            pokemonEntities.add(fetchPokemon(i));
         }
+
+        pokemonService.saveAll(pokemonEntities);
     }
 
 
@@ -81,7 +85,7 @@ public class PokeApiClient {
         pokemonTypeService.saveAll(pokemonTypeEntities);
     }
 
-    private void fetchAndPersistPokemon(int id) {
+    private PokemonEntity fetchPokemon(int id) {
         Pokemon pokemonResponse = client.get()
                 .uri("https://pokeapi.co/api/v2/pokemon/" + id)
                 .retrieve()
@@ -114,6 +118,6 @@ public class PokeApiClient {
             types.add(pokemonTypeEntities.stream().filter(pte -> pte.getName().equals(pokemonType.getType().getName())).findFirst().get());
         }
         pokemonEntity.setTypes(types);
-        pokemonService.save(pokemonEntity);
+        return pokemonEntity;
     }
 }

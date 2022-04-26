@@ -53,7 +53,7 @@ public class PokemonService {
         return (int) pokemonRepository.count();
     }
 
-    public void save(PokemonEntity pokemonEntity) {
-        pokemonRepository.save(pokemonEntity);
+    public void saveAll(List<PokemonEntity> pokemonEntities) {
+        pokemonRepository.saveAll(pokemonEntities);
     }
 }
