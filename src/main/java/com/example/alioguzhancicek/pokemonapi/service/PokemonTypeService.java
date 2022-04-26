@@ -28,12 +28,16 @@ public class PokemonTypeService {
         pokemonTypeRepository.saveAll(pokemonTypeEntities);
     }
 
-    public PokemonTypeEntity findByName(String name) {
+    public PokemonTypeEntity find(String name) {
         return pokemonTypeRepository.findByName(name);
     }
 
-    public List<PokemonTypeResponse> getPokemonTypes(GetPokemonTypesRequest request) {
+    public List<PokemonTypeResponse> findAll(GetPokemonTypesRequest request) {
         List<PokemonTypeEntity> pokemonTypeEntities = pokemonTypeRepository.findAll(Sort.by(request.getSortDir(), request.getSortCol()));
         return pokemonTypeEntityMapper.map(pokemonTypeEntities);
+    }
+
+    public List<PokemonTypeEntity> findAll() {
+        return pokemonTypeRepository.findAll();
     }
 }

@@ -106,10 +106,12 @@ public class PokeApiClient {
             pokemonEntity.getStats().add(pokemonStatEntity);
         }
 
+        List<PokemonTypeEntity> pokemonTypeEntities = pokemonTypeService.findAll();
+
         Set<PokemonTypeEntity> types = new HashSet<>();
 
         for (PokemonType pokemonType : pokemonResponse.getTypes()) {
-            types.add(pokemonTypeService.findByName(pokemonType.getType().getName()));
+            types.add(pokemonTypeEntities.stream().filter(pte -> pte.getName().equals(pokemonType.getType().getName())).findFirst().get());
         }
         pokemonEntity.setTypes(types);
         pokemonService.save(pokemonEntity);
