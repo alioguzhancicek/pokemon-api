@@ -29,7 +29,7 @@ services:
 
   kafka:
     image: 'confluentinc/cp-kafka:latest'
-    container_name: kafka
+    container_name: pokemon-api-kafka
     restart: unless-stopped
     platform: linux/amd64
     ports:
@@ -49,7 +49,7 @@ services:
 
   registry:
     image: 'confluentinc/cp-zookeeper:6.2.0'
-    container_name: registry
+    container_name: pokemon-api-registry
     restart: unless-stopped
     ports:
       - "2181:2181"
