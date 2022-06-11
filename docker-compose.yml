@@ -14,7 +14,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=pokemon-api
       - SPRING_DATASOURCE_PASSWORD=pokemon-api
       - SPRING_JPA_HIBERNATE_DDL_AUTO=create
-      - SPRING_KAFKA_BOOTSTRAPSERVERS=localhost:9092
     ports:
       - '8080:8080'
 
@@ -48,6 +47,7 @@ services:
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
       - KAFKA_HEAP_OPTS= -Xmx256m -Xms256m
       - KAFKA_JVM_PERFORMANCE_OPTS= -Xmx256m -Xms256m
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
     depends_on:
       - registry
 

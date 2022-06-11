@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PokeApiClient {
 
-    @Value("${pokemon-limit:151}")
+    @Value("${pokemon-limit}")
     private int pokemonLimit;
 
     private final PokemonService pokemonService;
