@@ -56,4 +56,8 @@ public class PokemonService {
     public void saveAll(List<PokemonEntity> pokemonEntities) {
         pokemonRepository.saveAll(pokemonEntities);
     }
+
+    public void save(PokemonEntity pokemonEntity) {
+        pokemonRepository.save(pokemonEntity);
+    }
 }

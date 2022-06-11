@@ -2,11 +2,8 @@ package com.example.alioguzhancicek.pokemonapi.client;
 
 import com.example.alioguzhancicek.pokemonapi.client.response.PokeApiBaseResponse;
 import com.example.alioguzhancicek.pokemonapi.client.response.Pokemon;
-import com.example.alioguzhancicek.pokemonapi.client.response.PokemonStat;
-import com.example.alioguzhancicek.pokemonapi.client.response.PokemonType;
-import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonEntity;
-import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonStatEntity;
 import com.example.alioguzhancicek.pokemonapi.model.entity.PokemonTypeEntity;
+import com.example.alioguzhancicek.pokemonapi.service.KafkaProducerService;
 import com.example.alioguzhancicek.pokemonapi.service.PokemonService;
 import com.example.alioguzhancicek.pokemonapi.service.PokemonTypeService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,6 +28,7 @@ public class PokeApiClient {
 
     private final PokemonService pokemonService;
     private final PokemonTypeService pokemonTypeService;
+    private final KafkaProducerService kafkaProducerService;
 
     private WebClient client = WebClient.builder()
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -53,13 +48,9 @@ public class PokeApiClient {
             return;
         }
 
-        List<PokemonEntity> pokemonEntities = new ArrayList<>();
-
         for (int i = fetchFrom; i <= pokemonLimit; i++) {
-            pokemonEntities.add(fetchPokemon(i));
+            fetchPokemon(i);
         }
-
-        pokemonService.saveAll(pokemonEntities);
     }
 
 
@@ -85,39 +76,14 @@ public class PokeApiClient {
         pokemonTypeService.saveAll(pokemonTypeEntities);
     }
 
-    private PokemonEntity fetchPokemon(int id) {
+    private void fetchPokemon(int id) {
         Pokemon pokemonResponse = client.get()
                 .uri("https://pokeapi.co/api/v2/pokemon/" + id)
                 .retrieve()
                 .bodyToMono(Pokemon.class).log().block();
 
-        PokemonEntity pokemonEntity = PokemonEntity.builder()
-                .name(pokemonResponse.getName())
-                .height(pokemonResponse.getHeight())
-                .weight(pokemonResponse.getWeight())
-                .stats(new ArrayList<>())
-                .types(new HashSet<>())
-                .spritesFrontDefault(pokemonResponse.getSprites().getFront_default())
-                .spritesBackDefault(pokemonResponse.getSprites().getBack_default())
-                .build();
-
-        for (PokemonStat pokemonStat : pokemonResponse.getStats()) {
-            PokemonStatEntity pokemonStatEntity = PokemonStatEntity.builder()
-                    .pokemon(pokemonEntity)
-                    .baseStat(pokemonStat.getBase_stat())
-                    .name(pokemonStat.getStat().getName()).build();
-
-            pokemonEntity.getStats().add(pokemonStatEntity);
+        if (pokemonResponse != null) {
+            kafkaProducerService.sendMessage(pokemonResponse);
         }
-
-        List<PokemonTypeEntity> pokemonTypeEntities = pokemonTypeService.findAll();
-
-        Set<PokemonTypeEntity> types = new HashSet<>();
-
-        for (PokemonType pokemonType : pokemonResponse.getTypes()) {
-            types.add(pokemonTypeEntities.stream().filter(pte -> pte.getName().equals(pokemonType.getType().getName())).findFirst().get());
-        }
-        pokemonEntity.setTypes(types);
-        return pokemonEntity;
     }
 }
