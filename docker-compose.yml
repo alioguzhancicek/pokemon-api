@@ -41,7 +41,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256m
+          memory: 512m
     container_name: pokemon-api-kafka
     restart: unless-stopped
     ports:
