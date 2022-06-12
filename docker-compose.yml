@@ -3,6 +3,10 @@ version: '3.8'
 services:
   app:
     image: 'pokemon-api:latest'
+    deploy:
+      resources:
+        limits:
+          memory: 256m
     build:
       context: .
     container_name: pokemon-api-app
@@ -19,6 +23,10 @@ services:
 
   db:
     image: 'postgres:13.1-alpine'
+    deploy:
+      resources:
+        limits:
+          memory: 256m
     container_name: pokemon-api-db
     environment:
       - POSTGRES_USER=pokemon-api
@@ -30,6 +38,10 @@ services:
   kafka:
     image: 'confluentinc/cp-kafka:latest'
     user: "0:0"
+    deploy:
+      resources:
+        limits:
+          memory: 256m
     container_name: pokemon-api-kafka
     restart: unless-stopped
     ports:
@@ -53,6 +65,10 @@ services:
 
   registry:
     image: 'confluentinc/cp-zookeeper:6.2.0'
+    deploy:
+      resources:
+        limits:
+          memory: 256m
     user: "0:0"
     container_name: pokemon-api-registry
     restart: unless-stopped
